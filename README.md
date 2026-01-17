@@ -6,24 +6,24 @@ Sonnet libc is a minimal libc for really constrained devices. It was initially d
 
 Supported:
 
-- Memory functions: `malloc`, `free`, `memcpy`, `memset`
-- String functions: `strlen`, `strcpy`, `strcmp`
-- Output functions: `printf` (integer only), `putchar`, `puts`
+- Memory functions: `malloc`, `free`, `memcpy`, `memset`.
+- String functions: `strlen`, `strcpy`, `strcmp`.
+- Output functions: `printf` (integer only), `putchar`, `puts`.
 
 Not Supported:
 
 - Input functions: `scanf`, `getchar`, `gets`.
-- Anything related with floating-point
-- Anything related with operating systems
-- Time/date functions (`<time.h>`)
-- Complex number support
-- Locale and wide character support
+- Anything related with floating-point.
+- Anything related with operating systems.
+- Time/date functions (`<time.h>`).
+- Complex number support.
+- Locale and wide character support.
 
 ## Building
 
 Simply build this project with `make`. And install the built library along with headers with `make DESTDIR=/path/to/sysroot install`.
 
-You can optionally provide a toolchain file to specify build target and options. Toolchain files in Sonnet SKD are also applicable here. This is an example toolchain file:
+You can optionally provide a toolchain file to specify build target and options, with `make TOOLCHAIN_FILE=/path/to/toochain/file`. Toolchain files in Sonnet SKD are also applicable here. This is an example toolchain file:
 
 ```makefile
 CC := clang
@@ -57,3 +57,10 @@ __attribute__ ((__noreturn__))
 void halt(int code);
 ```
 
+## License
+
+This software is licensed under the Mulan Permissive Software License, Version 2.0.
+
+To uphold academic integrity, the direct use or plagiarism of this code in any academic context where original work is required is strictly prohibited. You must not copy, paraphrase, or reimplement this source code for assignments, projects, or any other work that mandates independent creation.
+
+Furthermore, it is **strongly discouraged** to read this implementation before attempting to develop your own solution. Engaging with the problem independently is a critical part of the learning process.
