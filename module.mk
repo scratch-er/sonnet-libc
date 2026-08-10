@@ -1,0 +1,9 @@
+MODULE_FILE := $(lastword $(MAKEFILE_LIST))
+LIBC_DIR := $(dir $(MODULE_FILE))
+LIBC_BUILD_DIR ?= $(APP_BUILD_DIR)/sonnet-libc
+
+MODULE_INCLUDE_DIRS += $(LIBC_DIR)/include
+MODULE_LIBS += $(LIBC_BUILD_DIR)/libc.a
+
+$(LIBC_BUILD_DIR)/libc.a:
+	$(MAKE) -C $(LIBC_DIR) TOOLCHAIN_FILE=$(abspath $(TOOLCHAIN_FILE)) LIBC_BUILD_DIR=$(abspath $(LIBC_BUILD_DIR))
