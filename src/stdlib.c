@@ -1,6 +1,19 @@
 #include <ctype.h>
+#include <stdint.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdalign.h>
+
+typedef struct {
+    void* start;
+    void* end;
+} area_t;
+
+extern const area_t heap;
+
+__attribute__ ((__noreturn__))
+void halt(int code);
 
 static unsigned int _random_seed;
 
@@ -361,15 +374,24 @@ unsigned long long int strtoull(const char* str, char** endptr, int base) {
 }
 
 void *malloc(size_t size) {
-    static char *ptr = NULL;
-    if (ptr == NULL) {
-        ptr = (char*)heap.end;
+    static uintptr_t ptr;
+    static bool initialized;
+    // initialize ptr
+    if (!initialized) {
+        ptr = (uintptr_t)heap.start;
+        initialized = true;
     }
-    if (ptr-size < (char*)heap.start) {
+    // align ptr to a higher address
+    uintptr_t aligned_ptr = ptr;
+    if (aligned_ptr%alignof(max_align_t) != 0) {
+        aligned_ptr += alignof(max_align_t) - aligned_ptr%alignof(max_align_t);
+    }
+    // return NULL if fully allocated
+    if (size > (uintptr_t)heap.end - aligned_ptr) {
         return NULL;
     }
-    ptr -= size;
-    return ptr;
+    ptr = aligned_ptr + size;
+    return (void*)aligned_ptr;
 }
 
 void free(void *ptr) {

@@ -8,16 +8,6 @@
 extern "C" {
 #endif
 
-typedef struct {
-    void* start;
-    void* end;
-} area_t;
-
-extern const area_t heap;
-
-__attribute__ ((__noreturn__))
-void halt(int code);
-
 #ifndef NULL
 #define NULL 0
 #endif
