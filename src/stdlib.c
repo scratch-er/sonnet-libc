@@ -15,20 +15,25 @@ extern const area_t heap;
 __attribute__ ((__noreturn__))
 void halt(int code);
 
-static unsigned int _random_seed;
+static uint32_t _random_seed;
+
+static uint32_t prand(uint32_t prev) {
+    unsigned int feedback = 0;
+    feedback ^= (prev>>31) & 1;
+    feedback ^= (prev>>21) & 1;
+    feedback ^= (prev>>1) & 1;
+    feedback ^= (prev>>0) & 1;
+    uint32_t current = feedback<<31 | prev>>1;
+    return current;
+}
 
 int rand(void) {
     if (_random_seed == 0) {
         _random_seed = 0x7a2d5eed;
+    } else {
+        _random_seed = prand(_random_seed);
     }
-    unsigned int feedback = 0;
-    feedback ^= (_random_seed>>31) | 1;
-    feedback ^= (_random_seed>>21) | 1;
-    feedback ^= (_random_seed>>1) | 1;
-    feedback ^= (_random_seed>>0) | 1;
-    _random_seed >>= 1;
-    _random_seed |= feedback<<31;
-    return (_random_seed >> 1) % RAND_MAX;
+    return _random_seed & RAND_MAX;
 }
 
 void srand(unsigned int seed) {
@@ -132,7 +137,7 @@ long int strtol(const char* str, char** endptr, int base) {
         ++i;
     }
     // detect base
-    if (base == 0) {        
+    if (base == 0) {
         if (str[i] == '0') {
             ++i;
             if (str[i]=='x' || str[i]=='X') {
@@ -204,7 +209,7 @@ long long int strtoll(const char* str, char** endptr, int base) {
         ++i;
     }
     // detect base
-    if (base == 0) {        
+    if (base == 0) {
         if (str[i] == '0') {
             ++i;
             if (str[i]=='x' || str[i]=='X') {
@@ -267,7 +272,7 @@ unsigned long int strtoul(const char* str, char** endptr, int base) {
         ++i;
     }
     // detect base
-    if (base == 0) {        
+    if (base == 0) {
         if (str[i] == '0') {
             ++i;
             if (str[i]=='x' || str[i]=='X') {
@@ -326,7 +331,7 @@ unsigned long long int strtoull(const char* str, char** endptr, int base) {
         ++i;
     }
     // detect base
-    if (base == 0) {        
+    if (base == 0) {
         if (str[i] == '0') {
             ++i;
             if (str[i]=='x' || str[i]=='X') {

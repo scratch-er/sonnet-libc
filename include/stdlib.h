@@ -12,7 +12,7 @@ extern "C" {
 #define NULL 0
 #endif
 
-#define RAND_MAX 0x7fffffff;
+#define RAND_MAX 0x7fffffff
 
 void srand(unsigned int seed);
 
