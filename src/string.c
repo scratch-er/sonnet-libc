@@ -38,6 +38,11 @@ char *strcat(char *dst, const char *src) {
     return dst;
 }
 
+char *strncat(char *dst, const char *src, size_t count) {
+    strncpy(dst+strlen(dst), src, count);
+    return dst;
+}
+
 int strcmp(const char *s1, const char *s2) {
     return strncmp(s1, s2, SIZE_MAX);
 }
@@ -100,4 +105,104 @@ int memcmp(const void *s1, const void *s2, size_t n) {
         }
     }
     return 0;
+}
+
+char *strchr(const char *s, int c) {
+    const char* ptr;
+    for (ptr=s; *ptr; ++ptr) {
+        if (*ptr == (char)c) {
+            return (char *)ptr;
+        }
+    }
+    if (c == 0) {
+        return (char*)ptr;
+    } else {
+        return NULL;
+    }
+}
+
+char *strrchr(const char *s, int c) {
+    char* result = NULL;
+    const char* ptr;
+    for (ptr=s; *ptr; ++ptr) {
+        if (*ptr == (char)c) {
+            result = (char *)ptr;
+        }
+    }
+    if (c == 0) {
+        result = (char*)ptr;
+    }
+    return result;
+}
+
+char *strstr(const char *haystack, const char *needle) {
+    for (const char* i=haystack; *i; ++i) {
+        bool found = true;
+        for (size_t j=0; needle[j]; ++j) {
+            if (needle[j]!=i[j]) {
+                found = false;
+                break;
+            }
+        }
+        if (found) {
+            return (char*)i;
+        }
+    }
+    return NULL;
+}
+
+size_t strspn(const char *s, const char *accept) {
+    size_t i;
+    for (i=0; s[i]; ++i) {
+        bool found = false;
+        for (size_t j=0; accept[j]; ++j) {
+            if (s[i] == accept[j]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            break;
+        }
+    }
+    return i;
+}
+
+size_t strcspn(const char *s, const char *reject) {
+    size_t i;
+    for (i=0; s[i]; ++i) {
+        bool found = false;
+        for (size_t j=0; reject[j]; ++j) {
+            if (s[i] == reject[j]) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            break;
+        }
+    }
+    return i;
+}
+
+char *strpbrk(const char *s, const char *accept) {
+    const char* ptr;
+    for (ptr=s; *ptr; ++ptr) {
+        for (const char* j=accept; *j; ++j) {
+            if (*ptr == *j) {
+                return (char*) ptr;
+            }
+        }
+    }
+    return NULL;
+}
+
+void *memchr(const void *s, int c, size_t n) {
+    unsigned char* ptr = (unsigned char*)s;
+    for (size_t i=0; i<n; ++i) {
+        if (ptr[i] == (unsigned char)c) {
+            return (void*)(ptr + i);
+        }
+    }
+    return NULL;
 }
