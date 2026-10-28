@@ -15,9 +15,9 @@ extern const area_t heap;
 __attribute__ ((__noreturn__))
 void halt(int code);
 
-static uint32_t _random_seed;
+static uint32_t __random_seed;
 
-static uint32_t prand(uint32_t prev) {
+static uint32_t __prand(uint32_t prev) {
     unsigned int feedback = 0;
     feedback ^= (prev>>31) & 1;
     feedback ^= (prev>>21) & 1;
@@ -28,20 +28,49 @@ static uint32_t prand(uint32_t prev) {
 }
 
 int rand(void) {
-    if (_random_seed == 0) {
-        _random_seed = 0x7a2d5eed;
+    if (__random_seed == 0) {
+        __random_seed = 0x7a2d5eed;
     } else {
-        _random_seed = prand(_random_seed);
+        __random_seed = __prand(__random_seed);
     }
-    return _random_seed & RAND_MAX;
+    return __random_seed & RAND_MAX;
 }
 
 void srand(unsigned int seed) {
-    _random_seed = seed;
+    __random_seed = seed;
 }
 
 int abs(int x) {
     return (x < 0 ? -x : x);
+}
+
+long int labs(long int x) {
+    return (x < 0 ? -x : x);
+}
+
+long long int llabs(long long int x) {
+    return (x < 0 ? -x : x);
+}
+
+div_t div(int numer, int denom) {
+    div_t result;
+    result.quot = numer / denom;
+    result.rem = numer % denom;
+    return result;
+}
+
+ldiv_t ldiv(long int numer, long int denom) {
+    ldiv_t result;
+    result.quot = numer / denom;
+    result.rem = numer % denom;
+    return result;
+}
+
+lldiv_t lldiv(long long int numer, long long int denom) {
+    lldiv_t result;
+    result.quot = numer / denom;
+    result.rem = numer % denom;
+    return result;
 }
 
 int atoi(const char* nptr) {
@@ -411,4 +440,77 @@ void exit(int code) {
 __attribute__ ((__noreturn__))
 void abort(void) {
     halt(-1);
+}
+
+void* bsearch(const void* key, const void* base, size_t n, size_t size, int (*cmp)(const void*, const void*)) {
+    const unsigned char* base_c = (const unsigned char*)base;
+    size_t begin = 0;
+    size_t end = n;
+    while (begin < end) {
+        size_t mid = begin + (end - begin) / 2;
+        const char* mid_ptr = (const char*)(base_c+mid*size);
+        int cmp_result = cmp(key, mid_ptr);
+        if (cmp_result == 0) {
+            return (void*)mid_ptr;
+        } else if (cmp_result < 0) {
+            end = mid;
+        } else if (cmp_result > 0) {
+            begin = mid + 1;
+        }
+    }
+    return NULL;
+}
+
+static void __swap(void* a, void* b, size_t size) {
+    // we cannot assume the alignment of a and b
+    // use byte by byte swap here
+    for (size_t i=0; i<size; ++i) {
+        unsigned char tmp;
+        tmp = ((unsigned char*)a)[i];
+        ((unsigned char*)a)[i] = ((unsigned char*)b)[i];
+        ((unsigned char*)b)[i] = tmp;
+    }
+}
+
+void qsort(void* base, size_t n, size_t size, int (*cmp)(const void* , const void*)) {
+    unsigned char* base_c = (unsigned char*)base;
+    // byte by byte swap is slow
+    // use selection sort for smaller input
+    if (n <= 16) {
+        size_t i = 0;
+        size_t count_i = 0;
+        while (count_i+1 < n) {
+            size_t min_j = i;
+            size_t j = i + size;
+            size_t count_j = count_i + 1;
+            while (count_j < n) {
+                if (cmp(base_c+j, base_c+min_j) < 0) {
+                    min_j = j;
+                }
+                j += size;
+                count_j += 1;
+            }
+            __swap(base_c+i, base_c+min_j, size);
+            i += size;
+            count_i += 1;
+        }
+    } else {
+        size_t i = 0;
+        size_t count_i = 0;
+        size_t j = size;
+        size_t count_j = 1;
+        // using the beginning element as pivot
+        while (count_j < n) {
+            if (cmp(base_c+j, base_c) < 0) {
+                i += size;
+                count_i += 1;
+                __swap(base_c+i, base_c+j, size);
+            }
+            j += size;
+            count_j += 1;
+        }
+        __swap(base_c, base_c+i, size);
+        qsort(base_c, count_i, size, cmp);
+        qsort(base_c+i+size, n-count_i-1, size, cmp);
+    }
 }
