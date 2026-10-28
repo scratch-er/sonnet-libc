@@ -131,11 +131,11 @@ static void printf_uint32(printf_state_t *state, unsigned int n, size_t width, b
 static void printf_int32(printf_state_t *state, int n, size_t width, bool left_justified, char padding, char sign) {
     if (sign && n > 0) {
         printf_putch(state, sign);
-        width -= 1;
+        width = (width==0) ? 0 : width-1;
     } else if (n < 0) {
         printf_putch(state, '-');
         n = -n;
-        width -= 1;
+        width = (width==0) ? 0 : width-1;
     }
     printf_uint32(state, n, width, left_justified, padding);
 }
@@ -169,11 +169,11 @@ static void printf_uint64(printf_state_t *state, unsigned long long int n, size_
 static void printf_int64(printf_state_t *state, long long int n, size_t width, bool left_justified, char padding, char sign) {
     if (sign && n > 0) {
         printf_putch(state, sign);
-        width -= 1;
+        width = (width==0) ? 0 : width-1;
     } else if (n < 0) {
         printf_putch(state, '-');
         n = -n;
-        width -= 1;
+        width = (width==0) ? 0 : width-1;
     }
     printf_uint64(state, n, width, left_justified, padding);
 }
@@ -239,7 +239,7 @@ static void printf_octal32(printf_state_t *state, unsigned int n, size_t width, 
     if (n == 0) {
         buffer[0] = '0';
         n_digits = 1;
-    } else {        
+    } else {
         while (n > 0) {
             unsigned int rem = n % 8;
             buffer[n_digits++] = rem + '0';
@@ -265,7 +265,7 @@ static void printf_octal64(printf_state_t *state, unsigned long long int n, size
     if (n == 0) {
         buffer[0] = '0';
         n_digits = 1;
-    } else {        
+    } else {
         while (n > 0) {
             unsigned int rem = n % 8;
             buffer[n_digits++] = rem + '0';
@@ -332,6 +332,28 @@ static void printf_backend(printf_state_t *state, const char *fmt, va_list ap) {
                     length_level += 1;
                 } else if (fmt[i] == 'h') {
                     length_level -= 1;
+                } else if (fmt[i] == 'j') {
+                    length_level = 2;
+                } else if (fmt[i] == 'z') {
+                    if (sizeof(size_t) == sizeof(int)) {
+                        length_level = 0;
+                    } else if (sizeof(size_t) == sizeof(long int)) {
+                        length_level = 1;
+                    } else if (sizeof(size_t) == sizeof(long long int)) {
+                        length_level = 2;
+                    } else {
+                        length_level = 2;
+                    }
+                } else if (fmt[i] == 't') {
+                    if (sizeof(ptrdiff_t) == sizeof(int)) {
+                        length_level = 0;
+                    } else if (sizeof(ptrdiff_t) == sizeof(long int)) {
+                        length_level = 1;
+                    } else if (sizeof(ptrdiff_t) == sizeof(long long int)) {
+                        length_level = 2;
+                    } else {
+                        length_level = 2;
+                    }
                 } else {
                     break;
                 }
