@@ -76,13 +76,13 @@ void *memmove(void *dst, const void *src, size_t n) {
     } else if (p_src < p_dst) {
         size_t overlap_size = p_src + n - p_dst;
         size_t non_overlap_size = p_dst - p_src;
-        memcpy(p_dst+non_overlap_size, p_src+non_overlap_size, overlap_size);
-        memcpy(p_dst, p_src, non_overlap_size);
+        memcpy(p_dst+overlap_size, p_src+overlap_size, non_overlap_size);
+        memmove(p_dst, p_src, overlap_size);
     } else if (p_dst < p_src) {
         size_t overlap_size = p_dst + n - p_src;
         size_t non_overlap_size = p_src - p_dst;
-        memcpy(p_dst, p_src, overlap_size);
-        memcpy(p_dst+non_overlap_size, p_src+non_overlap_size, non_overlap_size);
+        memcpy(p_dst, p_src, non_overlap_size);
+        memmove(p_dst+non_overlap_size, p_src+non_overlap_size, overlap_size);
     }
     return dst;
 }
@@ -136,6 +136,9 @@ char *strrchr(const char *s, int c) {
 }
 
 char *strstr(const char *haystack, const char *needle) {
+    if (*needle == 0) {
+        return (char*)haystack;
+    }
     for (const char* i=haystack; *i; ++i) {
         bool found = true;
         for (size_t j=0; needle[j]; ++j) {
