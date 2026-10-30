@@ -442,6 +442,10 @@ void abort(void) {
     halt(-1);
 }
 
+#ifdef bsearch
+#undef bsearch
+#endif
+
 void* bsearch(const void* key, const void* base, size_t n, size_t size, int (*cmp)(const void*, const void*)) {
     const unsigned char* base_c = (const unsigned char*)base;
     size_t begin = 0;
@@ -513,4 +517,11 @@ void qsort(void* base, size_t n, size_t size, int (*cmp)(const void* , const voi
         qsort(base_c, count_i, size, cmp);
         qsort(base_c+i+size, n-count_i-1, size, cmp);
     }
+}
+
+size_t memalignment(const void* p) {
+    // Assumptions:
+    // - pointer values are directly cast to the numeric values of the addresses
+    // - size_t is same as uintptr_t
+    return (size_t)p & -(size_t)p;
 }

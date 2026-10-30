@@ -1,6 +1,8 @@
 #ifndef __CTYPE_H
 #define __CTYPE_H
 
+#define __STDC_VERSION_CTYPE_H__ 202311L
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -38,4 +40,3 @@ int toupper(int c);
 #endif
 
 #endif /* __CTYPE_H */
-

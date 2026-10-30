@@ -1,6 +1,8 @@
 #ifndef __STDLIB_H
 #define __STDLIB_H
 
+#define __STDC_VERSION_STDLIB_H__ 202311L
+
 #include <stddef.h>
 #include <stdarg.h>
 
@@ -9,7 +11,11 @@ extern "C" {
 #endif
 
 #ifndef NULL
+#if __STDC_VERSION__ >= 202311L
+#define NULL nullptr
+#else
 #define NULL 0
+#endif
 #endif
 
 #define RAND_MAX 0x7fffffff
@@ -78,6 +84,16 @@ ldiv_t ldiv(long int numer, long int denom);
 lldiv_t lldiv(long long int numer, long long int denom);
 
 size_t memalignment(const void* p);
+
+#if __STDC_VERSION__ >= 202311L
+
+#define bsearch(key, base, n, size, cmp) __builtin_choose_expr( \
+    __builtin_types_compatible_p(__typeof__(base), const __typeof__(*(base))*), \
+    (const void*)bsearch((key), (base), (n), (size), (cmp)), \
+    bsearch((key), (base), (n), (size), (cmp)) \
+)
+
+#endif /* __STDC_VERSION__ >= 202311L */
 
 #ifdef __cplusplus
 }

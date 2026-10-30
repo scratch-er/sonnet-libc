@@ -1,6 +1,8 @@
 #ifndef __ASSERT_H
 #define __ASSERT_H
 
+#define __STDC_VERSION_ASSERT_H__ 202311L
+
 #ifdef NDEBUG
 
 #define assert(ignore) ((void)0)

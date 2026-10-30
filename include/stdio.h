@@ -1,6 +1,8 @@
 #ifndef __STDIO_H
 #define __STDIO_H
 
+#define __STDC_VERSION_STDIO_H__ 202311L
+
 #include <stddef.h>
 #include <stdarg.h>
 

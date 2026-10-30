@@ -107,6 +107,10 @@ int memcmp(const void *s1, const void *s2, size_t n) {
     return 0;
 }
 
+#ifdef strchr
+#undef strchr
+#endif
+
 char *strchr(const char *s, int c) {
     const char* ptr;
     for (ptr=s; *ptr; ++ptr) {
@@ -121,6 +125,10 @@ char *strchr(const char *s, int c) {
     }
 }
 
+#ifdef strrchr
+#undef strrchr
+#endif
+
 char *strrchr(const char *s, int c) {
     char* result = NULL;
     const char* ptr;
@@ -134,6 +142,10 @@ char *strrchr(const char *s, int c) {
     }
     return result;
 }
+
+#ifdef strstr
+#undef strstr
+#endif
 
 char *strstr(const char *haystack, const char *needle) {
     if (*needle == 0) {
@@ -199,6 +211,10 @@ char *strpbrk(const char *s, const char *accept) {
     }
     return NULL;
 }
+
+#ifdef memchr
+#undef memchr
+#endif
 
 void *memchr(const void *s, int c, size_t n) {
     unsigned char* ptr = (unsigned char*)s;
